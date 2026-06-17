@@ -89,7 +89,7 @@ Example prompt:
 ### Build the Docker image
 
 ```powershell
-cd 'c:\Users\athre\Documents\Development\ML_FIFA'
+cd 'Development\ML_FIFA'
 docker build -t ml_fifa:latest .
 ```
 
@@ -133,4 +133,4 @@ Next steps / Suggestions
 - Replace RSS prototype with an embeddings-backed RAG index + semantic search for better contextual signals
 - Experiment with XGBoost/LightGBM for potential performance gains
 
-License: MIT (add your preferred license)
+License: MIT
