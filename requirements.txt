@@ -1,0 +1,9 @@
+pandas
+numpy
+scikit-learn
+streamlit
+google-cloud-aiplatform
+kaggle
+requests
+feedparser
+sentence-transformers
