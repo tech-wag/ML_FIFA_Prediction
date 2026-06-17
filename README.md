@@ -59,6 +59,31 @@ python Predictor.py "Brazil" "Argentina" "Friendly" --neutral
 python rag_production.py --build-index --team "Brazil"
 ```
 
+## Agent and skill guide
+
+This repository includes `agents.md` and `skills.md` so contributors and reviewers can use a shared agent workflow to understand the project and run predictions.
+
+- `agents.md`: describes the purpose of the ML_FIFA agent, supported repository tasks, and recommended prompts.
+- `skills.md`: documents skill categories, supported workflows, and example prompts for using the project as an agent-driven experience.
+
+How to leverage them:
+
+1. Open `agents.md` to understand the intended agent capabilities and recommended prompts.
+2. Open `skills.md` to see skill categories and sample command questions for prediction, training, RAG enrichment, and deployment.
+3. Use the agent-style prompts from those files when asking a teammate or AI assistant to guide you through:
+   - running the Streamlit UI
+   - training the model
+   - generating match predictions
+   - building a RAG index
+   - deploying with Vertex AI
+
+Example prompt:
+
+```powershell
+# Ask an AI assistant or teammate
+"How do I run the FIFA match predictor locally and generate a prediction for Brazil vs Argentina?"
+```
+
 ## Docker and CI/CD
 
 ### Build the Docker image
