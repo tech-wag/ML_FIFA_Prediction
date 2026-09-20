@@ -116,7 +116,11 @@ Example prompt:
 ### Build the Docker image
 
 ```powershell
+<<<<<<< HEAD
 cd '\Development\ML_FIFA'
+=======
+cd 'Development\ML_FIFA'
+>>>>>>> d783e7e880c1023d8a892e0378b5ba2d603a9b12
 docker build -t ml_fifa:latest .
 ```
 
