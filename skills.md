@@ -32,7 +32,14 @@ The skills focus on repository navigation, model and data pipeline tasks, and pr
 - Explain how news and keyword signals are merged into model features
 - Detail the optional embedding/index build flow in `rag_production.py`
 
-### 5. Deployment
+### 5. Dataset Querying and NLP-to-SQL
+
+- Convert user questions into SQL against the `results.csv` dataset
+- Explain how `nlp_to_sql.py` maps natural-language prompts to table filters and aggregate queries
+- Use dataset queries for team-specific, tournament-specific, and date-based questions in the Streamlit app
+- Return SQL and result tables in a user-friendly way from the app interface
+
+### 6. Deployment
 
 - Explain deployment helper `vertex_deploy.py`
 - Summarize Docker image build and local container run commands
@@ -42,6 +49,7 @@ The skills focus on repository navigation, model and data pipeline tasks, and pr
 
 - "How do I start the Streamlit UI in this repo?"
 - "What does `data_refresh.py` do and when should I run it?"
+- "How can I ask the dataset questions like 'How many matches did Brazil win at home?' in the app?"
 - "Explain how to build the embedding index in `rag_production.py`."
 - "What are the input features required by the FIFA prediction model?"
 - "How can I add a new news source to the RAG enrichment pipeline?"

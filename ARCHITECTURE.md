@@ -9,8 +9,9 @@ This document describes the system architecture and dataflow for the ML_FIFA pro
 - Model training: `TrainModel.py` (Random Forest)
 - RAG enrichment (prototype): `rag_enrich.py` (Google News RSS, keyword counts)
 - RAG production scaffold: `rag_production.py` (sentence-transformers embeddings, local index, Vertex Matching Engine upload)
+- Dataset query layer: `nlp_to_sql.py` (natural-language-to-SQL for `results.csv`)
 - Model serving: `Predictor.py` (adds live RAG features at inference), `vertex_deploy.py` (Vertex AI helper)
-- UI: `app.py` (Streamlit)
+- UI: `app.py` (Streamlit with prediction and query panels)
 
 Data Flow Diagrams
 
@@ -33,6 +34,17 @@ flowchart LR
   W --> X[RSS counts or Embedding search]
   X --> V
   V -->|predictions| U
+```
+
+### Dataset Query Flow (NLP to SQL)
+
+```mermaid
+flowchart LR
+  U[User / Streamlit] -->|natural-language question| A[app.py]
+  A -->|question text| Q[nlp_to_sql.py]
+  Q -->|pattern-based SQL generation| S[SQLite results table]
+  S -->|query result| A
+  A -->|table output| U
 ```
 
 ### Production Deployment Flow
