@@ -115,20 +115,11 @@ Example prompt:
 
 ### Build the Docker image
 
-```powershell
-<<<<<<< HEAD
-cd '\Development\ML_FIFA'
-=======
 cd 'Development\ML_FIFA'
->>>>>>> d783e7e880c1023d8a892e0378b5ba2d603a9b12
+cd 'Development\ML_FIFA'
 docker build -t ml_fifa:latest .
-```
-
 Run the container locally:
-
-```powershell
 docker run --rm -p 8501:8501 ml_fifa:latest
-```
 
 Then visit `http://localhost:8501` to access the Streamlit UI.
 
@@ -144,13 +135,10 @@ To execute the pipeline in Jenkins:
 4. Run the job.
 
 You can also run the commands manually in a shell:
-
-```powershell
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 python -m py_compile DataLoader.py TrainModel.py Predictor.py app.py rag_enrich.py rag_production.py vertex_deploy.py
 python -c "import pandas, sklearn, streamlit"
-```
 
 Architecture Overview
 See `ARCHITECTURE.md` for diagrams and component interactions.
