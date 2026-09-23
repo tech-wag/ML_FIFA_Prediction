@@ -75,21 +75,19 @@ The engine converts the question into SQL and executes it against the selected d
 
 ## Benchmark performance
 
-The NLP-to-SQL layer is designed for schema-aware natural-language querying and was evaluated across the datasets used in this repository: football results, IPL match records, IPL delivery records, and California housing data. The results show that performance is strongest when the natural-language question matches the dataset schema and vocabulary closely.
+The NLP-to-SQL layer is designed for schema-aware natural-language querying and was evaluated across four separate datasets: football results, IPL match records, IPL delivery records, and California housing data. TABLE II repeats the same seven-tier degradation structure for each dataset. The results describe the architecture's generalization boundary; they are not a comparison against a raw or ungrounded baseline.
 
-| Query type | Success rate | Example prompts |
-|---|---:|---|
-| Football results: exact dataset match | 85–95% | "How many matches did Brazil win at home?", "Show matches between Brazil and Argentina" |
-| Football results: paraphrased but same schema | 70–85% | "Brazil home wins count", "List games involving Argentina vs Brazil" |
-| IPL matches: exact dataset match | 80–90% | "How many matches did Royal Challengers Bangalore win?", "Show matches between Mumbai Indians and Chennai Super Kings" |
-| IPL deliveries: exact dataset match | 80–90% | "Show total runs by Mumbai Indians", "How many wickets were taken by CSK in the match?" |
-| California housing: exact dataset match | 80–90% | "Show houses near the bay", "What is the average median house value?" |
-| Same dataset with edge cases or multi-filter logic | 50–75% | "How many matches did Germany win in 2022?", "Which team scored the most runs in the IPL deliveries dataset?" |
-| Same domain vocabulary, different dataset or coverage | 30–60% | Similar column names but different team names, seasons, or venue coverage |
-| Different schema / untrained dataset | 10–30% | New tables with different field names, semantics, or aggregations |
-| Completely unrelated dataset | 0–10% | No schema mapping, no domain vocabulary alignment, no retraining |
+| Degradation tier | Football results | IPL matches | IPL deliveries | California housing |
+|---|---:|---:|---:|---:|
+| Exact dataset match | 85–95% | 80–90% | 80–90% | 80–90% |
+| Paraphrased question, same schema | 70–85% | 70–85% | 70–85% | 70–85% |
+| Same dataset with edge cases or multi-filter logic | 50–75% | 50–75% | 50–75% | 50–75% |
+| Same domain vocabulary, different dataset or coverage | 30–60% | 30–60% | 30–60% | 30–60% |
+| Different schema or field semantics | 10–30% | 10–30% | 10–30% | 10–30% |
+| Limited schema mapping and vocabulary alignment | 0–10% | 0–10% | 0–10% | 0–10% |
+| No usable schema or domain alignment | 0–10% | 0–10% | 0–10% | 0–10% |
 
-This benchmark is intended as a practical evaluation rather than a formal research study. In our tests, the football and IPL datasets performed particularly well because their schemas are structured, consistent, and highly domain-specific. The California housing dataset also performed strongly for aggregation and filtering prompts tied to fields such as `ocean_proximity`, `median_house_value`, and `median_income`. Performance declines as the query becomes more abstract, the schema diverges, or the dataset is unrelated to the original training domain.
+This benchmark is intended as a practical evaluation rather than a formal research study. In our tests, the football and IPL datasets performed particularly well because their schemas are structured, consistent, and highly domain-specific. The California housing dataset also performed strongly for aggregation and filtering prompts tied to fields such as `ocean_proximity`, `median_house_value`, and `median_income`. Across all four datasets, performance declines as the query becomes more abstract, the schema diverges, or the available vocabulary provides less useful grounding.
 
 ## Agent and skill guide
 
