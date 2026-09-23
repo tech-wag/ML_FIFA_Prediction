@@ -3,8 +3,24 @@ from Predictor import predict_match, load_model
 from nlp_to_sql import DatasetQueryEngine
 
 
-def get_query_engine():
-    return DatasetQueryEngine("results.csv")
+DATASET_OPTIONS = {
+    "Football Results": "results.csv",
+    "IPL Matches": "matches.csv",
+    "IPL Deliveries": "deliveries.csv",
+    "California Housing": "housing.csv",
+}
+
+DATASET_EXAMPLES = {
+    "Football Results": "How many matches did Brazil win at home?",
+    "IPL Matches": "How many matches did Royal Challengers Bangalore win?",
+    "IPL Deliveries": "Show total runs by Mumbai Indians",
+    "California Housing": "Show houses near the bay",
+}
+
+
+def get_query_engine(dataset_name: str):
+    csv_path = DATASET_OPTIONS.get(dataset_name, "results.csv")
+    return DatasetQueryEngine(csv_path)
 
 
 def render_probability_row(label: str, value: float, color: str) -> str:
@@ -19,26 +35,35 @@ def render_probability_row(label: str, value: float, color: str) -> str:
     )
 
 
+def render_dataset_query_section():
+    st.subheader("📊 Ask the dataset a natural-language question")
+    selected_dataset = st.selectbox("Dataset", list(DATASET_OPTIONS.keys()), index=0, key="selected_dataset")
+    query_prompt = st.text_input(
+        f"Question about the {selected_dataset.lower()} dataset",
+        value=DATASET_EXAMPLES[selected_dataset],
+        key="dataset_query_input",
+    )
+
+    if st.button("Run dataset query", key="run_dataset_query"):
+        query_engine = get_query_engine(selected_dataset)
+        try:
+            sql_query = query_engine.build_query(query_prompt)
+            result_df = query_engine.execute(query_prompt)
+            st.code(sql_query, language="sql")
+            st.dataframe(result_df.head(20), use_container_width=True)
+        except Exception as exc:
+            st.error(f"Dataset query failed: {exc}")
+        finally:
+            if 'query_engine' in locals():
+                query_engine.close()
+
+
 st.set_page_config(page_title="FIFA Match Predictor", page_icon="⚽", layout="centered")
 
 st.title("FIFA Match Result Predictor")
 st.write("Predict the outcome of a football match using a trained Random Forest model.")
 
-st.subheader("📊 Ask the dataset a natural-language question")
-query_prompt = st.text_input(
-    "Question about the football results dataset",
-    value="How many matches did Brazil win at home?",
-    key="dataset_query_input",
-)
-if st.button("Run dataset query", key="run_dataset_query"):
-    query_engine = get_query_engine()
-    try:
-        sql_query = query_engine.build_query(query_prompt)
-        result_df = query_engine.execute(query_prompt)
-        st.code(sql_query, language="sql")
-        st.dataframe(result_df.head(20), use_container_width=True)
-    finally:
-        query_engine.close()
+render_dataset_query_section()
 
 artifact = load_model()
 encoders = artifact["encoders"]
