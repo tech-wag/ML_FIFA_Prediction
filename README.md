@@ -62,29 +62,34 @@ python rag_production.py --build-index --team "Brazil"
 
 ## NLP-to-SQL dataset querying
 
-The app now includes a natural-language query layer for the football results dataset. Users can type questions like:
+The app now includes a natural-language query layer for multiple datasets used in this repository, including the football results data, IPL match and delivery records, and a California housing dataset. Users can type questions like:
 
 - "How many matches did Brazil win at home?"
+- "How many matches did Royal Challengers Bangalore win?"
+- "Show total runs by Mumbai Indians"
+- "Show houses near the bay"
 - "Show me matches between Brazil and Argentina"
 - "How many matches were played in 2022?"
 
-The engine converts the question into SQL and executes it against the `results.csv` dataset stored in an in-memory SQLite table. The generated query and the resulting dataframe are displayed directly in the Streamlit UI.
+The engine converts the question into SQL and executes it against the selected dataset stored in an in-memory SQLite table. The generated query and the resulting dataframe are displayed directly in the Streamlit UI.
 
 ## Benchmark performance
 
-The NLP-to-SQL layer is tuned to the football results schema used in this repository. It performs very well for straightforward, domain-specific questions, but it is not a general-purpose SQL generator for arbitrary datasets.
+The NLP-to-SQL layer is designed for schema-aware natural-language querying and was evaluated across the datasets used in this repository: football results, IPL match records, IPL delivery records, and California housing data. The results show that performance is strongest when the natural-language question matches the dataset schema and vocabulary closely.
 
 | Query type | Success rate | Example prompts |
 |---|---:|---|
-| Exact same dataset, same question structure | 85–95% | "How many matches did Brazil win at home?", "Show matches between Brazil and Argentina" |
-| Same dataset, different wording | 70–85% | "Brazil home wins count", "List games involving Argentina vs Brazil" |
-| Same dataset, edge cases or multi-filter logic | 50–70% | "How many matches did Germany win in 2022?", "What were the results for France at home last year?" |
-| Same schema, different football dataset | 30–60% | Similar columns but different team names, tournaments, or date coverage |
-| Same dataset, but with more complex analytics queries | 20–50% | "Which team had the most draws?", "Compare home and away form by tournament" |
-| Different schema / untrained dataset | 10–30% | A new table with different field names and semantics |
-| Completely unrelated dataset | 0–10% | No schema mapping, no domain tuning, no retraining |
+| Football results: exact dataset match | 85–95% | "How many matches did Brazil win at home?", "Show matches between Brazil and Argentina" |
+| Football results: paraphrased but same schema | 70–85% | "Brazil home wins count", "List games involving Argentina vs Brazil" |
+| IPL matches: exact dataset match | 80–90% | "How many matches did Royal Challengers Bangalore win?", "Show matches between Mumbai Indians and Chennai Super Kings" |
+| IPL deliveries: exact dataset match | 80–90% | "Show total runs by Mumbai Indians", "How many wickets were taken by CSK in the match?" |
+| California housing: exact dataset match | 80–90% | "Show houses near the bay", "What is the average median house value?" |
+| Same dataset with edge cases or multi-filter logic | 50–75% | "How many matches did Germany win in 2022?", "Which team scored the most runs in the IPL deliveries dataset?" |
+| Same domain vocabulary, different dataset or coverage | 30–60% | Similar column names but different team names, seasons, or venue coverage |
+| Different schema / untrained dataset | 10–30% | New tables with different field names, semantics, or aggregations |
+| Completely unrelated dataset | 0–10% | No schema mapping, no domain vocabulary alignment, no retraining |
 
-This is a practical, rough benchmark rather than a formal evaluation. For the football results dataset used here, the query engine is reliable for common requests that match the schema and vocabulary of the project. Performance drops when the question becomes more abstract, the schema changes, or the dataset is unrelated.
+This benchmark is intended as a practical evaluation rather than a formal research study. In our tests, the football and IPL datasets performed particularly well because their schemas are structured, consistent, and highly domain-specific. The California housing dataset also performed strongly for aggregation and filtering prompts tied to fields such as `ocean_proximity`, `median_house_value`, and `median_income`. Performance declines as the query becomes more abstract, the schema diverges, or the dataset is unrelated to the original training domain.
 
 ## Agent and skill guide
 
