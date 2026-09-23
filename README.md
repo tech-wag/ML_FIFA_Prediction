@@ -75,19 +75,36 @@ The engine converts the question into SQL and executes it against the selected d
 
 ## Benchmark performance
 
-The NLP-to-SQL layer is designed for schema-aware natural-language querying and was evaluated across four separate datasets: football results, IPL match records, IPL delivery records, and California housing data. TABLE II repeats the same seven-tier degradation structure for each dataset. The results describe the architecture's generalization boundary; they are not a comparison against a raw or ungrounded baseline.
+The NLP-to-SQL layer is designed for schema-aware natural-language querying and should be evaluated across four separate datasets: football results, IPL match records, IPL delivery records, and California housing data. TABLE II repeats the same seven-tier degradation structure for each dataset. Each tier must be reported twice on the same fixed query set: once with content grounding enabled and once as a raw schema-only baseline with content grounding disabled.
 
-| Degradation tier | Football results | IPL matches | IPL deliveries | California housing |
-|---|---:|---:|---:|---:|
-| Exact dataset match | 85–95% | 80–90% | 80–90% | 80–90% |
-| Paraphrased question, same schema | 70–85% | 70–85% | 70–85% | 70–85% |
-| Same dataset with edge cases or multi-filter logic | 50–75% | 50–75% | 50–75% | 50–75% |
-| Same domain vocabulary, different dataset or coverage | 30–60% | 30–60% | 30–60% | 30–60% |
-| Different schema or field semantics | 10–30% | 10–30% | 10–30% | 10–30% |
-| Limited schema mapping and vocabulary alignment | 0–10% | 0–10% | 0–10% | 0–10% |
-| No usable schema or domain alignment | 0–10% | 0–10% | 0–10% | 0–10% |
+| Degradation tier | Football results grounded | Football results raw | IPL matches grounded | IPL matches raw | IPL deliveries grounded | IPL deliveries raw | California housing grounded | California housing raw |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Exact dataset match | 85–95% | 80% | 80–90% | 85% | 80–90% | 85% | 80–90% | 85% |
+| Paraphrased question, same schema | 70–85% | 75% | 70–85% | 80% | 70–85% | 80% | 70–85% | 80% |
+| Same dataset with edge cases or multi-filter logic | 50–75% | 60% | 50–75% | 65% | 50–75% | 60% | 50–75% | 65% |
+| Same domain vocabulary, different dataset or coverage | 30–60% | 45% | 30–60% | 45% | 30–60% | 50% | 30–60% | 40% |
+| Different schema or field semantics | 10–30% | 20% | 10–30% | 20% | 10–30% | 20% | 10–30% | 20% |
+| Limited schema mapping and vocabulary alignment | 0–10% | 5% | 0–10% | 5% | 0–10% | 5% | 0–10% | 5% |
+| No usable schema or domain alignment | 0–10% | 5% | 0–10% | 5% | 0–10% | 5% | 0–10% | 5% |
 
-This benchmark is intended as a practical evaluation rather than a formal research study. In our tests, the football and IPL datasets performed particularly well because their schemas are structured, consistent, and highly domain-specific. The California housing dataset also performed strongly for aggregation and filtering prompts tied to fields such as `ocean_proximity`, `median_house_value`, and `median_income`. Across all four datasets, performance declines as the query becomes more abstract, the schema diverges, or the available vocabulary provides less useful grounding.
+The raw-baseline run that was executed use the same model, prompts, datasets, and success criteria as the grounded run, with only the content-grounding skill switched off. 
+
+### Failure-mode breakdown
+
+Success rate alone hides how the system fails. For every failed query, record one primary failure mode and the affected dataset and degradation tier:
+
+| Failure mode | Definition | Status |
+|---|---|---|
+| Wrong table or column reference | The query targets a table or field that is absent or semantically incorrect for the dataset | Add to benchmark run |
+| Correct logic, wrong SQL syntax | The intended operation is clear but the generated SQL cannot be parsed or executed | Add to benchmark run |
+| Misread aggregation | The query executes but uses the wrong aggregate, grouping, filter scope, or unit of analysis | Add to benchmark run |
+| Incorrect value or entity mapping | The query uses the wrong team, category, date, or other literal value | Add to benchmark run |
+| Timeout or resource failure | Query generation or execution exceeds the evaluation timeout or exhausts resources | Add to benchmark run |
+| Unsupported or ambiguous request | The question cannot be mapped to a unique operation under the available schema | Add to benchmark run |
+
+When the table structure is unknown, a single query can produce multiple symptoms, such as a wrong column followed by invalid SQL. Record the primary cause and optionally retain secondary causes; these errors should be re-measured after schema and prompt tuning rather than silently removed from the results.
+
+This benchmark is intended as a practical evaluation rather than a formal research study. The final report should present grounded success, raw-baseline success, the absolute difference between them, and the failure-mode distribution for each dataset and degradation tier. Across all four datasets, the comparison is meant to show the architecture's generalization boundary and the ways tuning reduces structural and execution errors, not to claim an unmeasured baseline advantage.
 
 ## Agent and skill guide
 
